@@ -47,14 +47,16 @@
           <form class="mt-16 mt-sm-32 mb-8">
             <div class="mb-16">
               <label for="loginUsername" class="form-label">Username :</label>
-              <input type="text" class="form-control" id="loginUsername" />
+              <input v-model="username" type="text" class="form-control" id="loginUsername" />
             </div>
 
             <div class="mb-16">
               <label for="loginPassword" class="form-label">Password :</label>
-              <input type="password" class="form-control" id="loginPassword" />
+              <input v-model="password" type="password" class="form-control" id="loginPassword" />
             </div>
-            <button @click="signIn" type="submit" class="btn btn-primary w-100">Sign in</button>
+            <button @click="validateSignIn" type="button" class="btn btn-primary w-100">
+              Sign in
+            </button>
           </form>
 
           <div class="col-12 hp-form-info text-center">
@@ -75,10 +77,29 @@
 </template>
 
 <script>
+import { successMessage, errorMessage } from '../../components/Message'
+
 export default {
+  data() {
+    return {
+      username: null,
+      password: null
+    }
+  },
   methods: {
-    signIn() {
-      alert('TEST SIGN IN')
+    validateSignIn() {
+      let errorDetail = null
+      if (!this.username || !this.password) {
+        errorDetail = 'Please enter your username and password'
+      }
+      return this.signIn(errorDetail)
+    },
+    signIn(errorDetail) {
+      if (errorDetail) {
+        return errorMessage('Sign In Failed', errorDetail)
+      }
+
+      return successMessage('Sign In Success')
     }
   }
 }

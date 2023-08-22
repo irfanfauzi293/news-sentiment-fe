@@ -47,27 +47,44 @@
           </p>
 
           <form class="mt-16 mt-sm-32 mb-8">
-            <div class="mb-16">
-              <label for="registerUsername" class="form-label">Username :</label>
-              <input type="text" class="form-control" id="registerUsername" />
-            </div>
+            <TextField
+              ref="rUsername"
+              id="registerUsername"
+              :minlength="8"
+              label="Username"
+              v-model="username"
+            />
+            <TextField
+              ref="rEmail"
+              id="registerEmail"
+              label="Email"
+              text-type="email"
+              :custom-validator="vEmail"
+              v-model="email"
+            />
+            <TextField
+              ref="rPassword"
+              id="registerPassword"
+              label="Password"
+              text-type="password"
+              :minlength="10"
+              :maxlength="14"
+              v-model="password"
+            />
+            <TextField
+              ref="rConfirmPassword"
+              id="registerPassword"
+              label="Confirm Password"
+              text-type="password"
+              :minlength="10"
+              :maxlength="14"
+              :custom-validator="passwordMatchValidation"
+              v-model="confirmPassword"
+            />
 
-            <div class="mb-16">
-              <label for="registerEmail" class="form-label">E-mail :</label>
-              <input type="email" class="form-control" id="registerEmail" />
-            </div>
-
-            <div class="mb-16">
-              <label for="registerPassword" class="form-label">Password :</label>
-              <input type="password" class="form-control" id="registerPassword" />
-            </div>
-
-            <div class="mb-16">
-              <label for="registerConfirmPassword" class="form-label">Confirm Password :</label>
-              <input type="password" class="form-control" id="registerConfirmPassword" />
-            </div>
-
-            <button @click="register" type="submit" class="btn btn-primary w-100">Sign Up</button>
+            <button @click="validateRegister" type="button" class="btn btn-primary w-100">
+              Sign Up
+            </button>
           </form>
 
           <div class="col-12 hp-form-info text-center">
@@ -85,10 +102,68 @@
 </template>
 
 <script>
+import { successMessage, errorMessage } from '../../components/Message'
+import { email as emailValidator } from '../../components/validator'
+import TextField from '../../components/TextField.vue'
+
 export default {
+  components: {
+    TextField
+  },
+  data() {
+    return {
+      username: null,
+      password: null,
+      confirmPassword: null,
+      email: null
+    }
+  },
   methods: {
-    register() {
-      alert('TEST REGISTER')
+    validateRegister() {
+      let errorDetail = null
+      const refs = []
+      for (let key in this.$refs) {
+        refs.push({ desc: this.$refs[key].label, ref: this.$refs[key] })
+      }
+
+      if (!this.username || !this.password || !this.confirmPassword || !this.email) {
+        errorDetail = 'Please enter all field'
+      }
+
+      const errorLabel = []
+
+      refs.forEach((ref) => {
+        if (ref.ref.hasError()) {
+          errorLabel.push(ref.desc)
+        }
+      })
+
+      if (errorLabel.length) {
+        errorDetail = `There are still invalid value`
+      }
+
+      return this.register(errorDetail)
+    },
+    register(errorDetail) {
+      if (errorDetail) {
+        return errorMessage('Sign Up Failed', errorDetail)
+      }
+
+      successMessage('Sign Up Success')
+
+      this.$router.push({ path: '/' })
+    },
+    vEmail: emailValidator
+  },
+  computed: {
+    passwordMatchValidation() {
+      return () => {
+        if (this.password === this.confirmPassword) {
+          return null
+        }
+
+        return 'Your password is not match'
+      }
     }
   }
 }
