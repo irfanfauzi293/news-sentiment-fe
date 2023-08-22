@@ -12,10 +12,7 @@ const regex = {
 }
 
 function fnRegex(value, type) {
-  console.log(value)
-  console.log(type)
   const re = new RegExp(regex[type])
-  console.log(re.test)
   if (value) {
     if (re.test(value)) {
       return null
