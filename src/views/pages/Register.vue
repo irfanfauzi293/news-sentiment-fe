@@ -69,7 +69,7 @@
               text-type="password"
               :minlength="10"
               :maxlength="14"
-              v-model="password"
+              v-model="userPassword"
             />
             <TextField
               ref="rConfirmPassword"
@@ -105,6 +105,7 @@
 import { successMessage, errorMessage } from '../../components/Message'
 import { email as emailValidator } from '../../components/validator'
 import TextField from '../../components/TextField.vue'
+import axios from 'axios'
 
 export default {
   components: {
@@ -113,7 +114,7 @@ export default {
   data() {
     return {
       username: null,
-      password: null,
+      userPassword: null,
       confirmPassword: null,
       email: null
     }
@@ -126,7 +127,7 @@ export default {
         refs.push({ desc: this.$refs[key].label, ref: this.$refs[key] })
       }
 
-      if (!this.username || !this.password || !this.confirmPassword || !this.email) {
+      if (!this.username || !this.userPassword || !this.confirmPassword || !this.email) {
         errorDetail = 'Please enter all field'
       }
 
@@ -144,21 +145,31 @@ export default {
 
       return this.register(errorDetail)
     },
-    register(errorDetail) {
+    async register(errorDetail) {
       if (errorDetail) {
         return errorMessage('Sign Up Failed', errorDetail)
       }
 
-      successMessage('Sign Up Success')
+      try {
+        await axios.post('http://localhost:3000/news-sentiment/authenticate/register', {
+          username: this.username,
+          userPassword: this.userPassword,
+          email: this.email
+        })
 
-      this.$router.push({ path: '/' })
+        successMessage('Sign Up Success')
+        this.$router.push({ path: '/' })
+      } catch (error) {
+        console.log(error)
+        errorMessage('Sign Up Failed', error.response.data.message)
+      }
     },
     vEmail: emailValidator
   },
   computed: {
     passwordMatchValidation() {
       return () => {
-        if (this.password === this.confirmPassword) {
+        if (this.userPassword === this.confirmPassword) {
           return null
         }
 

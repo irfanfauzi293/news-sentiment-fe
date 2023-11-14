@@ -1,18 +1,21 @@
 import Swal from 'sweetalert2'
+const confirmButtonText = 'Close'
 
-export function successMessage(title) {
+export function successMessage(title, showConfirmButton = true) {
   return Swal.fire({
     icon: 'success',
     title: title,
-    showConfirmButton: false
+    showConfirmButton,
+    confirmButtonText
   })
 }
 
-export function errorMessage(title, text) {
+export function errorMessage(title, text, showConfirmButton = true) {
   return Swal.fire({
     icon: 'error',
     title: title,
     text: text,
-    showConfirmButton: false
+    showConfirmButton,
+    confirmButtonText
   })
 }

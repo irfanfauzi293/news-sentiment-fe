@@ -77,7 +77,8 @@
 </template>
 
 <script>
-import { successMessage, errorMessage } from '../../components/Message'
+import { errorMessage } from '../../components/Message'
+import { mapActions, mapGetters } from 'vuex'
 
 export default {
   data() {
@@ -86,7 +87,11 @@ export default {
       password: null
     }
   },
+  computed: {
+    ...mapGetters(['currentUser'])
+  },
   methods: {
+    ...mapActions(['handleSignIn']),
     validateSignIn() {
       let errorDetail = null
       if (!this.username || !this.password) {
@@ -94,12 +99,24 @@ export default {
       }
       return this.signIn(errorDetail)
     },
-    signIn(errorDetail) {
+    async signIn(errorDetail) {
       if (errorDetail) {
-        return errorMessage('Sign In Failed', errorDetail)
+        return errorMessage('Sign in Failed', errorDetail)
       }
-
-      return successMessage('Sign In Success')
+      await this.handleSignIn({
+        username: this.username,
+        userPassword: this.password,
+        callback: () => {}
+      })
+    }
+  },
+  watch: {
+    currentUser(value) {
+      if (value && value.tokenid && value.tokenid.length > 0) {
+        setTimeout(() => {
+          this.$router.push('/news')
+        }, 100)
+      }
     }
   }
 }
