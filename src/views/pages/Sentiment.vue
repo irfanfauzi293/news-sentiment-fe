@@ -252,6 +252,16 @@
                     </div>
                   </div>
 
+                  <div class="col-12 mb-24">
+                    <div>
+                      <label for="personelTopic" class="form-label">
+                        <span class="text-danger me-4">*</span>
+                        Topik
+                      </label>
+                      <input v-model="topic" type="text" class="form-control" id="topic" />
+                    </div>
+                  </div>
+
                   <div class="col-12">
                     <div>
                       <label for="personelText" class="form-label">
@@ -302,6 +312,7 @@ export default {
       perPage: 5,
       politicalName: '',
       politicalDesc: '',
+      topic: '',
       optionsEarningsChart: {
         series: [
           {
@@ -419,7 +430,8 @@ export default {
         await axios.post('http://127.0.0.1:5000/fetch_and_save_news', {
           figure_name: this.politicalName,
           figure_id: this.currentPolitical.figureId,
-          crawlType: this.crawlType
+          crawlType: this.crawlType,
+          topic: this.topic
         })
         await this.getNews()
         this.isLoading = false
